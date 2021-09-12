@@ -6,7 +6,7 @@ services:
     ports:
       - "8761:8761"
     networks:
-      - test-network
+      - producer-consumer
 
   api-gateway:
     image: api-gateway
@@ -14,7 +14,7 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - test-network
+      - producer-consumer
     environment:
       EUREKA.CLIENT.SERVICE-URL.DEFAULTZONE: http://service-discovery:8761/eureka
     entrypoint:
@@ -34,7 +34,7 @@ services:
     ports:
       - "8081:8081"
     networks:
-      - test-network
+      - producer-consumer
     environment:
       EUREKA.CLIENT.SERVICE-URL.DEFAULTZONE: http://service-discovery:8761/eureka
     entrypoint:
@@ -54,7 +54,7 @@ services:
     ports:
       - "8082:8082"
     networks:
-      - test-network
+      - producer-consumer
     environment:
       EUREKA.CLIENT.SERVICE-URL.DEFAULTZONE: http://service-discovery:8761/eureka
     entrypoint:
@@ -70,4 +70,4 @@ services:
       ]
 
 networks:
-  test-network:
+  producer-consumer:
