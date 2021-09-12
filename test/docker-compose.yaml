@@ -1,0 +1,73 @@
+version: "3.7"
+
+services:
+  service-discovery:
+    image: service-discovery
+    ports:
+      - "8761:8761"
+    networks:
+      - test-network
+
+  api-gateway:
+    image: api-gateway
+    mem_limit: 700m
+    ports:
+      - "8080:8080"
+    networks:
+      - test-network
+    environment:
+      EUREKA.CLIENT.SERVICE-URL.DEFAULTZONE: http://service-discovery:8761/eureka
+    entrypoint:
+      [
+        "./wait-for-it.sh",
+        "service-discovery:8761",
+        "--timeout=0",
+        "--strict",
+        "--",
+        "java",
+        "-jar",
+        "api-gateway.jar",
+      ]
+
+  spring-producer:
+    image: spring-producer
+    ports:
+      - "8081:8081"
+    networks:
+      - test-network
+    environment:
+      EUREKA.CLIENT.SERVICE-URL.DEFAULTZONE: http://service-discovery:8761/eureka
+    entrypoint:
+      [
+        "./wait-for-it.sh",
+        "api-gateway:8080",
+        "--timeout=0",
+        "--strict",
+        "--",
+        "java",
+        "-jar",
+        "spring-producer.jar",
+      ]
+
+  spring-consumer:
+    image: spring-consumer
+    ports:
+      - "8082:8082"
+    networks:
+      - test-network
+    environment:
+      EUREKA.CLIENT.SERVICE-URL.DEFAULTZONE: http://service-discovery:8761/eureka
+    entrypoint:
+      [
+        "./wait-for-it.sh",
+        "spring-producer:8081",
+        "--timeout=0",
+        "--strict",
+        "--",
+        "java",
+        "-jar",
+        "spring-consumer.jar",
+      ]
+
+networks:
+  test-network:
